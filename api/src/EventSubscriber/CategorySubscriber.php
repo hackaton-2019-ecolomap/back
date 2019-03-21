@@ -32,7 +32,7 @@ final class CategorySubscriber implements EventSubscriberInterface
     {
 
         $url = "https://api.ozae.com/gnw/articles?date=20180301__20180630&key=11116dbf000000000000960d2228e999&edition=en-us-ny&query=USA&hard_limit=50";
-
+       
 
         $timeout = 100;
         $content_pays = [];
@@ -133,13 +133,27 @@ final class CategorySubscriber implements EventSubscriberInterface
 
         }
 
+
+
+
+        $keywordsFr = array('déforestation','séisme','éruption volcanique','tsunami','mouvements de terrain','inondation','tempête','cyclone','orages');
+        $keywordsUs = array('deforestation ',' earthquake ',' volcanic eruption ',' tsunami ',' land movements', 'flood', 'storm', 'cyclone', 'storms');
+        $number_key_words_occurence=[];
+
+        foreach($keywordsFr as $cle=>$keyword){
+            foreach ($raw_data_content as $content){
+                     
+
+            }
+        }
+
 //        $occurence = substr_count($raw_data_content[0], "Taliban");
 
 
 
 //        $event->setControllerResult(gettype($content["articles"]));
         $event->setControllerResult($list_id);
-        $event->setControllerResult($raw_data_content[0]);
+        $event->setControllerResult($raw_data_content);
 //        $event->setControllerResult($occurence);
 
     }
