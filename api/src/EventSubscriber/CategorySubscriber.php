@@ -31,14 +31,18 @@ final class CategorySubscriber implements EventSubscriberInterface
     public function getReferencedArticles(GetResponseForControllerResultEvent $event)
     {
 
-        $url = "https://api.ozae.com/gnw/articles?date=20180301__20180630&key=11116dbf000000000000960d2228e999&edition=en-us-ny&query=USA&hard_limit=50";
-       
+        $url_pollution = "https://api.ozae.com/gnw/articles?date=20180305__20180312&key=11116dbf000000000000960d2228e999&edition=fr-fr&query=France&hard_limit=20";
+//        $url_deforestation = "https://api.ozae.com/gnw/articles?date=20180105__20181212&key=c5c6c39f1c25452c9e735812468879c8&edition=fr-fr&query=France&hard_limit=100";
+
+
 
         $timeout = 100;
         $content_pays = [];
 
+
+        //article lié a la France
         try {
-            $ch = curl_init($url);
+            $ch = curl_init($url_pollution);
 
             // Check if initialization had gone wrong*
             if ($ch === false) {
@@ -67,6 +71,7 @@ final class CategorySubscriber implements EventSubscriberInterface
             }
 
             /* Process $content here */
+            $event->setControllerResult(curl_error($ch));
 
             // Close curl handle
             curl_close($ch);
@@ -78,8 +83,11 @@ final class CategorySubscriber implements EventSubscriberInterface
         //liste de tout les article contenant 1 mot
         $list_id = [];
 
-        foreach ($content_pays["articles"] as $article){
-            array_push($list_id,$article['id']);
+        if (!empty($content_pays["articles"])){
+
+            foreach ($content_pays["articles"] as $article){
+                array_push($list_id,$article['id']);
+            }
         }
 
 //        contenu article par id
@@ -90,7 +98,7 @@ final class CategorySubscriber implements EventSubscriberInterface
 
             try {
 
-                $url = "https://api.ozae.com/gnw/article/".$article_id."/html_content?key=8dff35cfd68b48be8dff4c6a2d0fb3ac";
+                $url = "https://api.ozae.com/gnw/article/".$article_id."/html_content?key=c5c6c39f1c25452c9e735812468879c8";
 
                 $ch = curl_init($url);
 
@@ -133,28 +141,38 @@ final class CategorySubscriber implements EventSubscriberInterface
 
         }
 
+        //ajoute l'ensemble des contenu dans une variable
+        $raw_data_content_implode = implode($raw_data_content);
 
 
+//        recherche de mot clé et leur nombre de occurrence  (atuellement les requete sont trop importante et cela met trop de temps "timeour")
+//        $keywordsFr = array('déforestations','pollution','erosions','appauvrissement des sols','déchets urbain','pollution urbaine','pollution atmosphérique','catastrophe nucléaire','déchets marins','marée noire');
+//        $keywordsUs = array('deforestation ','pollution',' erosions', 'soil depletion', 'urban waste', 'urban pollution', 'air pollution', 'nuclear disaster', 'marine litter', 'oil spill');
+//        $number_key_words_occurence=[];
+//
+//        $test = substr_count($raw_data_content_implode, 'Trump');
+//        $occurence = [];
+//        foreach($keywordsUs as $cle=>$keyword){
+//            $test = substr_count($raw_data_content_implode, $keyword);
+//            array_push($occurence, [$keyword => $test]);
+//
+//        }
 
-        $keywordsFr = array('déforestation','séisme','éruption volcanique','tsunami','mouvements de terrain','inondation','tempête','cyclone','orages');
-        $keywordsUs = array('deforestation ',' earthquake ',' volcanic eruption ',' tsunami ',' land movements', 'flood', 'storm', 'cyclone', 'storms');
-        $number_key_words_occurence=[];
+        $pollution = substr_count($raw_data_content_implode, "pollution");
+        $deforestation = 1;
 
-        foreach($keywordsFr as $cle=>$keyword){
-            foreach ($raw_data_content as $content){
-                     
 
-            }
-        }
-
-//        $occurence = substr_count($raw_data_content[0], "Taliban");
+        
+        $response = ["Pollution", "Déforestation"];
 
 
 
 //        $event->setControllerResult(gettype($content["articles"]));
-        $event->setControllerResult($list_id);
-        $event->setControllerResult($raw_data_content);
+//        $event->setControllerResult($list_id);
+//        $event->setControllerResult($raw_data_content_implode);
+//        $event->setControllerResult($test);
 //        $event->setControllerResult($occurence);
-
+        $event->setControllerResult($pollution);
+        $event->setControllerResult($response);
     }
 }
