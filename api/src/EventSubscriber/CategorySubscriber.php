@@ -100,9 +100,7 @@ final class CategorySubscriber implements EventSubscriberInterface
         foreach ($list_id as $article_id){
 
             try {
-
                 $url = "https://api.ozae.com/gnw/article/".$article_id."/html_content?key=c5c6c39f1c25452c9e735812468879c8";
-
                 $ch = curl_init($url);
 
                 // Check if initialization had gone wrong*
@@ -156,7 +154,7 @@ final class CategorySubscriber implements EventSubscriberInterface
         $occurence = [];
         foreach($keywords as $cle=>$keyword){
             $test = substr_count($raw_data_content_implode, $keyword);
-            array_push($occurence, [$keyword => $test]);
+            $occurence[$keyword] = $test;
         }
 
 
