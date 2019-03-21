@@ -6,7 +6,25 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource
+ * @ApiResource(
+ *     collectionOperations={
+ *          "get"={
+ *              "method"="GET",
+ *              "swagger_context" = {
+ *                  "parameters" = {
+ *                      {
+ *                          "name" = "region",
+ *                          "in" = "query",
+ *                          "description" = "Region",
+ *                          "required" = "true",
+ *                          "type" : "string"
+ *                      }
+ *                  }
+ *               }
+ *          }
+ *     },
+ *     itemOperations={"get"}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
 class Category

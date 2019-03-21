@@ -31,8 +31,11 @@ final class CategorySubscriber implements EventSubscriberInterface
     public function getReferencedArticles(GetResponseForControllerResultEvent $event)
     {
 
-        $url_pollution = "https://api.ozae.com/gnw/articles?date=20180305__20180312&key=11116dbf000000000000960d2228e999&edition=fr-fr&query=France&hard_limit=20";
-//        $url_deforestation = "https://api.ozae.com/gnw/articles?date=20180105__20181212&key=c5c6c39f1c25452c9e735812468879c8&edition=fr-fr&query=France&hard_limit=100";
+        $region = $event->getRequest()->get("region");
+
+//        $url_ = "https://api.ozae.com/gnw/articles?date=20150105__20181212&key=c5c6c39f1c25452c9e735812468879c8&edition=fr-fr&query=".$region."&hard_limit=1000";
+        //url de test avec nbr d'article retourné réduis
+        $url = "https://api.ozae.com/gnw/articles?date=20180305__20180312&key=11116dbf000000000000960d2228e999&edition=fr-fr&query=".$region."&hard_limit=60";
 
 
 
@@ -42,7 +45,7 @@ final class CategorySubscriber implements EventSubscriberInterface
 
         //article lié a la France
         try {
-            $ch = curl_init($url_pollution);
+            $ch = curl_init($url);
 
             // Check if initialization had gone wrong*
             if ($ch === false) {
@@ -145,34 +148,20 @@ final class CategorySubscriber implements EventSubscriberInterface
         $raw_data_content_implode = implode($raw_data_content);
 
 
-//        recherche de mot clé et leur nombre de occurrence  (atuellement les requete sont trop importante et cela met trop de temps "timeour")
-//        $keywordsFr = array('déforestations','pollution','erosions','appauvrissement des sols','déchets urbain','pollution urbaine','pollution atmosphérique','catastrophe nucléaire','déchets marins','marée noire');
-//        $keywordsUs = array('deforestation ','pollution',' erosions', 'soil depletion', 'urban waste', 'urban pollution', 'air pollution', 'nuclear disaster', 'marine litter', 'oil spill');
-//        $number_key_words_occurence=[];
-//
-//        $test = substr_count($raw_data_content_implode, 'Trump');
-//        $occurence = [];
-//        foreach($keywordsUs as $cle=>$keyword){
-//            $test = substr_count($raw_data_content_implode, $keyword);
-//            array_push($occurence, [$keyword => $test]);
-//
-//        }
+//        recherche de mot clé et leur nombre de occurrence  (atuellement les requete sont trop importante et cela met trop de temps "timeout")
+        $keywords = array('déforestations','pollution','erosions','appauvrissement des sols','déchets urbain','pollution urbaine','pollution atmosphérique','catastrophe nucléaire','déchets marins','marée noire');
+        $number_key_words_occurence=[];
 
-        $pollution = substr_count($raw_data_content_implode, "pollution");
-        $deforestation = 1;
-
-
-        
-        $response = ["Pollution", "Déforestation"];
+        $test = 0;
+        $occurence = [];
+        foreach($keywords as $cle=>$keyword){
+            $test = substr_count($raw_data_content_implode, $keyword);
+            array_push($occurence, [$keyword => $test]);
+        }
 
 
 
-//        $event->setControllerResult(gettype($content["articles"]));
-//        $event->setControllerResult($list_id);
-//        $event->setControllerResult($raw_data_content_implode);
-//        $event->setControllerResult($test);
-//        $event->setControllerResult($occurence);
-        $event->setControllerResult($pollution);
-        $event->setControllerResult($response);
+
+        $event->setControllerResult($occurence);
     }
 }
